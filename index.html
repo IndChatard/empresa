@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Industria Chatard - Soluciones Metal-Mecánicas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Sans+Pro:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'blue-primary': '#1E40AF',
+                        'blue-secondary': '#3B82F6',
+                        'gray-industrial': '#374151',
+                        'orange-accent': '#F59E0B',
+                        'green-success': '#10B981',
+                        'background-light': '#F8FAFC'
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                        'source': ['Source Sans Pro', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            background-color: #F8FAFC;
+            min-height: 100vh;
+        }
+        
+        .industrial-bg {
+            background: linear-gradient(rgba(30, 64, 175, 0.9), rgba(30, 64, 175, 0.7)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="gears" patternUnits="userSpaceOnUse" width="40" height="40"><path d="M20,20 L30,10 M20,20 L10,30 M20,20 L30,30 M20,20 L10,10" stroke="%23FFFFFF" stroke-width="1" opacity="0.2"/></pattern></defs><rect width="100" height="100" fill="url(%23gears)"/></svg>');
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #E5E7EB;
+            overflow: hidden;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(30, 64, 175, 0.15);
+            border-color: #3B82F6;
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: #F3F4F6;
+        }
+        
+        .price-tag {
+            font-family: 'JetBrains Mono', monospace;
+            color: #1E40AF;
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 64, 175, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #374151;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-secondary:hover {
+            background: #4B5563;
+            transform: translateY(-1px);
+        }
+        
+        .btn-accent {
+            background: #F59E0B;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-accent:hover {
+            background: #D97706;
+            transform: translateY(-1px);
+        }
+        
+        .service-card {
+            background: white;
+            border-radius: 10px;
+            padding: 24px;
+            text-align: center;
+            border: 2px solid #E5E7EB;
+            transition: all 0.3s ease;
+        }
+        
+        .service-card:hover {
+            border-color: #3B82F6;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(30, 64, 175, 0.1);
+        }
+        
+        .service-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #3B82F6, #1E40AF);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: white;
+        }
+        
+        .stock-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #10B981;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .featured-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .category-filter {
+            background: white;
+            border: 2px solid #E5E7EB;
+            color: #374151;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .category-filter:hover,
+        .category-filter.active {
+            border-color: #1E40AF;
+            background: #1E40AF;
+            color: white;
+        }
+        
+        .cart-icon {
+            position: relative;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #F59E0B;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .section-title {
+            position: relative;
+            padding-bottom: 16px;
+            margin-bottom: 32px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #1E40AF, #3B82F6);
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+            }
+            
+            .product-card {
+                padding: 12px !important;
+            }
+            
+            .product-image {
+                height: 120px !important;
+            }
+            
+            .service-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+            }
+            
+            .service-card {
+                padding: 16px !important;
+            }
+            
+            .service-icon {
+                width: 48px;
+                height: 48px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .product-grid {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .service-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            max-width: 300px;
+            border-left: 4px solid #10B981;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast-error {
+            border-left-color: #EF4444;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="h-10 w-10 bg-gradient-to-br from-blue-primary to-blue-secondary rounded-lg flex items-center justify-center mr-3">
+                        <span class="text-white font-bold text-lg">IC</span>
+                    </div>
+                    <span class="text-xl font-bold text-gray-industrial font-inter">Industria Chatard</span>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-blue-primary font-medium">Inicio</a>
+                    <a href="servicios.html" class="text-gray-industrial hover:text-blue-primary transition-colors">Servicios</a>
+                    <a href="productos.html" class="text-gray-industrial hover:text-blue-primary transition-colors">Productos</a>
+                    <a href="turnos.html" class="text-gray-industrial hover:text-blue-primary transition-colors">Turnos</a>
+                    <a href="cart.html" class="text-gray-industrial hover:text-blue-primary transition-colors">Carrito</a>
+                </nav>
+                
+                <!-- Cart Icon -->
+                <div class="flex items-center space-x-4">
+                    <a href="turnos.html" class="btn-accent text-sm hidden md:inline-block">
+                        Solicitar Turno
+                    </a>
+                    <a href="cart.html" class="cart-icon relative">
+                        <svg class="w-6 h-6 text-gray-industrial hover:text-blue-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5 6m0 0h9m-9 0V19a2 2 0 002 2h7a2 2 0 002-2v-4"></path>
+                        </svg>
+                        <span id="cart-count" class="cart-count">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="industrial-bg text-white py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold font-inter mb-6">
+                Soluciones <span class="text-orange-accent">Metal-Mecánicas</span> de Precisión
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+                Especialistas en CNC, corte láser, plasma y mantenimiento de vehículos pesados
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="servicios.html" class="btn-primary text-lg px-8 py-3 inline-block">
+                    Nuestros Servicios
+                </a>
+                <a href="turnos.html" class="btn-accent text-lg px-8 py-3 inline-block">
+                    Solicitar Turno
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center text-gray-industrial font-inter section-title">
+                Servicios Especializados
+            </h2>
+            
+            <div class="service-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2 font-inter">Corte Láser CNC</h3>
+                    <p class="text-gray-600 text-sm">Precisión milimétrica en metales de todo tipo</p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2 font-inter">Corte Plasma</h3>
+                    <p class="text-gray-600 text-sm">Corte de alta velocidad en materiales gruesos</p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2 font-inter">Centros Mecanizados</h3>
+                    <p class="text-gray-600 text-sm">Fabricación de piezas complejas en 3-5 ejes</p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2 font-inter">Mantenimiento Pesado</h3>
+                    <p class="text-gray-600 text-sm">Servicio especializado para vehículos industriales</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center text-gray-industrial font-inter section-title">
+                Productos Destacados
+            </h2>
+            
+            <div class="product-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="featured-products">
+                <!-- Productos se cargarán dinámicamente -->
+                <div class="text-center py-12">
+                    <p class="text-gray-500">Cargando productos...</p>
+                </div>
+            </div>
+            
+            <div class="text-center mt-8">
+                <a href="productos.html" class="btn-primary inline-block">
+                    Ver Todos los Productos
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-gradient-to-r from-blue-primary to-blue-secondary text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold font-inter mb-4">
+                ¿Necesita piezas especiales?
+            </h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto">
+                Cotizamos trabajos personalizados y proyectos complejos
+            </p>
+            <a href="turnos.html" class="btn-accent text-lg px-8 py-3 inline-block">
+                Solicitar Cotización
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-industrial text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <div class="h-8 w-8 bg-gradient-to-br from-blue-secondary to-blue-primary rounded-lg flex items-center justify-center mr-3">
+                            <span class="text-white font-bold">IC</span>
+                        </div>
+                        <span class="text-xl font-bold font-inter">Industria Chatard</span>
+                    </div>
+                    <p class="text-gray-300 text-sm">
+                        Especialistas en soluciones metal-mecánicas desde 1998. Precisión, calidad y servicio.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 font-inter">Contacto</h4>
+                    <p class="text-gray-300 text-sm mb-2">📱 Tel: (264) 577-6592</p>
+                    <p class="text-gray-300 text-sm mb-2">📧 info@industriachatard.com</p>
+                    <p class="text-gray-300 text-sm">📍 Av. Industrial 123, San Juan</p>
+                    <p class="text-gray-300 text-sm mt-2">🕒 Lun-Vie: 8:00-18:00 | Sáb: 8:00-13:00</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 font-inter">Servicios</h4>
+                    <p class="text-gray-300 text-sm mb-1">✓ Corte Láser CNC</p>
+                    <p class="text-gray-300 text-sm mb-1">✓ Corte Plasma</p>
+                    <p class="text-gray-300 text-sm mb-1">✓ Centros Mecanizados</p>
+                    <p class="text-gray-300 text-sm">✓ Mantenimiento Pesado</p>
+                </div>
+            </div>
+            <div class="border-t border-gray-600 mt-8 pt-8 text-center text-gray-400 text-sm">
+                <p>&copy; 2024 Industria Chatard. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="main.js"></script>
+    
+    <script>
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFeaturedProducts();
+            updateCartUI();
+        });
+        
+        function loadFeaturedProducts() {
+            const productsGrid = document.getElementById('featured-products');
+            
+            // Simular carga de productos
+            setTimeout(() => {
+                const featuredProducts = window.chatardApp?.getFeaturedProducts();
+                
+                if (featuredProducts && featuredProducts.length > 0) {
+                    productsGrid.innerHTML = featuredProducts.map(product => `
+                        <div class="product-card relative">
+                            ${product.featured ? '<div class="featured-badge">Destacado</div>' : ''}
+                            ${product.stock > 0 ? '<div class="stock-badge">Disponible</div>' : ''}
+                            
+                            <img src="${product.image || 'resources/placeholder.jpg'}" 
+                                 alt="${product.name}" 
+                                 class="product-image"
+                                 onerror="this.src='resources/placeholder.jpg'">
+                            
+                            <div class="p-4">
+                                <h3 class="font-semibold text-gray-industrial mb-2 font-inter truncate">
+                                    ${product.name}
+                                </h3>
+                                <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+                                    ${product.description}
+                                </p>
+                                <div class="flex justify-between items-center">
+                                    <span class="price-tag">$${product.price.toFixed(2)}</span>
+                                    <button class="btn-primary text-sm" 
+                                            onclick="addToCart('${product.id}')"
+                                            ${product.stock === 0 ? 'disabled' : ''}>
+                                        ${product.stock === 0 ? 'Agotado' : 'Agregar'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    productsGrid.innerHTML = `
+                        <div class="col-span-full text-center py-12">
+                            <p class="text-gray-500">No hay productos destacados disponibles</p>
+                        </div>
+                    `;
+                }
+            }, 500);
+        }
+        
+        function updateCartUI() {
+            const cartCount = document.getElementById('cart-count');
+            const cart = JSON.parse(localStorage.getItem('chatard_cart')) || [];
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            
+            if (cartCount) {
+                cartCount.textContent = count;
+                cartCount.style.display = count > 0 ? 'block' : 'none';
+            }
+        }
+        
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type === 'error' ? 'toast-error' : ''}`;
+            toast.innerHTML = `
+                <div class="toast-content p-3">
+                    <span class="toast-message text-sm">${message}</span>
+                    <button class="toast-close text-gray-400">&times;</button>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 100);
+            
+            toast.querySelector('.toast-close').onclick = () => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            };
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 3000);
+        }
+        
+        // Funciones globales
+        function addToCart(productId) {
+            if (window.chatardApp) {
+                window.chatardApp.addToCart(productId);
+            } else {
+                showToast('Producto agregado al carrito', 'success');
+                updateCartUI();
+            }
+        }
+    </script>
+</body>
+</html>
