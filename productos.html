@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos - Industria Chatard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'blue-primary': '#1E40AF',
+                        'blue-secondary': '#3B82F6',
+                        'gray-industrial': '#374151',
+                        'orange-accent': '#F59E0B',
+                        'green-success': '#10B981'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            background-color: #F8FAFC;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #E5E7EB;
+            overflow: hidden;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(30, 64, 175, 0.15);
+            border-color: #3B82F6;
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: #F3F4F6;
+        }
+        
+        .price-tag {
+            font-family: 'JetBrains Mono', monospace;
+            color: #1E40AF;
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 64, 175, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #374151;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-secondary:hover {
+            background: #4B5563;
+            transform: translateY(-1px);
+        }
+        
+        .category-filter {
+            background: white;
+            border: 2px solid #E5E7EB;
+            color: #374151;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .category-filter:hover,
+        .category-filter.active {
+            border-color: #1E40AF;
+            background: #1E40AF;
+            color: white;
+        }
+        
+        .stock-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #10B981;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .featured-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .section-title {
+            position: relative;
+            padding-bottom: 16px;
+            margin-bottom: 32px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #1E40AF, #3B82F6);
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+            }
+            
+            .product-card {
+                padding: 12px !important;
+            }
+            
+            .product-image {
+                height: 120px !important;
+            }
+            
+            .category-filters {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                padding-bottom: 8px;
+            }
+            
+            .category-filter {
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .product-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="h-10 w-10 bg-gradient-to-br from-blue-primary to-blue-secondary rounded-lg flex items-center justify-center mr-3">
+                        <span class="text-white font-bold text-lg">IC</span>
+                    </div>
+                    <span class="text-xl font-bold text-gray-industrial font-inter">Industria Chatard</span>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-industrial hover:text-blue-primary transition-colors">Inicio</a>
+                    <a href="servicios.html" class="text-gray-industrial hover:text-blue-primary transition-colors">Servicios</a>
+                    <a href="productos.html" class="text-blue-primary font-medium">Productos</a>
+                    <a href="turnos.html" class="text-gray-industrial hover:text-blue-primary transition-colors">Turnos</a>
+                    <a href="cart.html" class="text-gray-industrial hover:text-blue-primary transition-colors">Carrito</a>
+                </nav>
+                
+                <!-- Cart Icon -->
+                <div class="flex items-center space-x-4">
+                    <a href="cart.html" class="relative">
+                        <svg class="w-6 h-6 text-gray-industrial hover:text-blue-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5 6m0 0h9m-9 0V19a2 2 0 002 2h7a2 2 0 002-2v-4"></path>
+                        </svg>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-orange-accent text-white rounded-full w-5 h-5 text-xs flex items-center justify-center"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="bg-gradient-to-r from-blue-primary to-blue-secondary text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="text-4xl font-bold font-inter mb-4">Catálogo de Productos</h1>
+            <p class="text-xl">Piezas fabricadas y productos terminados para la industria</p>
+        </div>
+    </section>
+
+    <!-- Filters -->
+    <section class="py-6 bg-white border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap gap-3 category-filters" id="category-filters">
+                <!-- Categorías se cargarán dinámicamente -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Grid -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-industrial font-inter">Todos los Productos</h2>
+                <div class="text-gray-600">
+                    <span id="product-count">0</span> productos
+                </div>
+            </div>
+            
+            <div class="product-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="products-grid">
+                <!-- Productos se cargarán dinámicamente -->
+                <div class="col-span-full text-center py-12">
+                    <p class="text-gray-500">Cargando productos...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-16 bg-white border-t">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-2xl font-bold text-gray-industrial mb-4 font-inter">
+                ¿No encuentra lo que busca?
+            </h2>
+            <p class="text-gray-600 mb-6 max-w-2xl mx-auto">
+                Podemos fabricar piezas personalizadas según sus especificaciones técnicas
+            </p>
+            <a href="turnos.html" class="btn-primary inline-block">
+                Solicitar Fabricación Personalizada
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-industrial text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <div class="h-8 w-8 bg-gradient-to-br from-blue-secondary to-blue-primary rounded-lg flex items-center justify-center mr-3">
+                            <span class="text-white font-bold">IC</span>
+                        </div>
+                        <span class="text-xl font-bold font-inter">Industria Chatard</span>
+                    </div>
+                    <p class="text-gray-300 text-sm">
+                        Especialistas en soluciones metal-mecánicas desde 1998.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 font-inter">Contacto</h4>
+                    <p class="text-gray-300 text-sm mb-2">📱 Tel: (264) 577-6592</p>
+                    <p class="text-gray-300 text-sm mb-2">📧 info@industriachatard.com</p>
+                    <p class="text-gray-300 text-sm">📍 Av. Industrial 123, San Juan</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 font-inter">Horarios</h4>
+                    <p class="text-gray-300 text-sm mb-1">Lun-Vie: 8:00-18:00</p>
+                    <p class="text-gray-300 text-sm">Sábado: 8:00-13:00</p>
+                </div>
+            </div>
+            <div class="border-t border-gray-600 mt-8 pt-8 text-center text-gray-400 text-sm">
+                <p>&copy; 2024 Industria Chatard. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+    
+    <script>
+        let currentCategory = 'todos';
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCategories();
+            loadProducts();
+            updateCartUI();
+        });
+        
+        function loadCategories() {
+            const categories = window.chatardApp?.categories || [
+                'todos', 'piezas', 'estructuras', 'herramientas', 'accesorios', 'repuestos'
+            ];
+            
+            const filtersContainer = document.getElementById('category-filters');
+            
+            const categoryNames = {
+                'todos': 'Todos',
+                'piezas': 'Piezas CNC',
+                'estructuras': 'Estructuras',
+                'herramientas': 'Herramientas',
+                'accesorios': 'Accesorios',
+                'repuestos': 'Repuestos'
+            };
+            
+            filtersContainer.innerHTML = categories.map(cat => `
+                <button class="category-filter ${cat === 'todos' ? 'active' : ''}" 
+                        data-category="${cat}"
+                        onclick="filterByCategory('${cat}')">
+                    ${categoryNames[cat] || cat}
+                </button>
+            `).join('');
+        }
+        
+        function loadProducts() {
+            const productsGrid = document.getElementById('products-grid');
+            const products = window.chatardApp?.products || getDefaultProducts();
+            
+            displayProducts(products);
+        }
+        
+        function getDefaultProducts() {
+            return [
+                {
+                    id: 'pieza-001',
+                    name: 'Placa de Acero Cortada',
+                    category: 'piezas',
+                    featured: true,
+                    price: 1250.50,
+                    stock: 15,
+                    image: 'resources/placeholder.jpg',
+                    description: 'Placa de acero A36 cortada a medida',
+                    code: 'PLA-001'
+                },
+                {
+                    id: 'estructura-001',
+                    name: 'Estructura Metálica',
+                    category: 'estructuras',
+                    featured: false,
+                    price: 8500.00,
+                    stock: 8,
+                    image: 'resources/placeholder.jpg',
+                    description: 'Estructura base para máquinas industriales',
+                    code: 'EST-001'
+                },
+                {
+                    id: 'herramienta-001',
+                    name: 'Juego de Sujetadores',
+                    category: 'herramientas',
+                    featured: true,
+                    price: 350.75,
+                    stock: 25,
+                    image: 'resources/placeholder.jpg',
+                    description: 'Set de 12 sujetadores para CNC',
+                    code: 'HER-001'
+                },
+                {
+                    id: 'repuesto-001',
+                    name: 'Motor Paso a Paso',
+                    category: 'repuestos',
+                    featured: false,
+                    price: 1200.00,
+                    stock: 6,
+                    image: 'resources/placeholder.jpg',
+                    description: 'Motor NEMA 23 para máquinas CNC',
+                    code: 'REP-001'
+                }
+            ];
+        }
+        
+        function displayProducts(products) {
+            const productsGrid = document.getElementById('products-grid');
+            const filteredProducts = currentCategory === 'todos' 
+                ? products 
+                : products.filter(p => p.category === currentCategory);
+            
+            document.getElementById('product-count').textContent = filteredProducts.length;
+            
+            if (filteredProducts.length === 0) {
+                productsGrid.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <h3 class="text-lg font-semibold text-gray-600 mb-2">No hay productos en esta categoría</h3>
+                        <button class="btn-secondary" onclick="filterByCategory('todos')">
+                            Ver todos los productos
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            productsGrid.innerHTML = filteredProducts.map(product => `
+                <div class="product-card relative">
+                    ${product.featured ? '<div class="featured-badge">Destacado</div>' : ''}
+                    ${product.stock > 0 ? '<div class="stock-badge">Stock: ' + product.stock + '</div>' : ''}
+                    
+                    <img src="${product.image || 'resources/placeholder.jpg'}" 
+                         alt="${product.name}" 
+                         class="product-image"
+                         onerror="this.src='resources/placeholder.jpg'">
+                    
+                    <div class="p-4">
+                        <h3 class="font-semibold text-gray-industrial mb-2 font-inter truncate">
+                            ${product.name}
+                        </h3>
+                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+                            ${product.description}
+                        </p>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs text-gray-500">Código: ${product.code}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="price-tag">$${product.price.toFixed(2)}</span>
+                            <button class="btn-primary text-sm" 
+                                    onclick="addToCart('${product.id}')"
+                                    ${product.stock === 0 ? 'disabled' : ''}>
+                                ${product.stock === 0 ? 'Agotado' : 'Agregar'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function filterByCategory(category) {
+            currentCategory = category;
+            
+            // Update active filter button
+            document.querySelectorAll('.category-filter').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.category === category);
+            });
+            
+            // Filter products
+            loadProducts();
+        }
+        
+        function updateCartUI() {
+            const cartCount = document.getElementById('cart-count');
+            const cart = JSON.parse(localStorage.getItem('chatard_cart')) || [];
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            
+            if (cartCount) {
+                cartCount.textContent = count > 0 ? count : '';
+            }
+        }
+        
+        function addToCart(productId) {
+            if (window.chatardApp) {
+                window.chatardApp.addToCart(productId);
+            } else {
+                showToast('Producto agregado al carrito', 'success');
+                updateCartUI();
+            }
+        }
+        
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-4 right-4 bg-white rounded-lg shadow-lg border-l-4 border-green-success p-3 max-w-sm z-50';
+            if (type === 'error') toast.classList.add('border-red-500');
+            
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <span class="text-sm">${message}</span>
+                    <button class="ml-4 text-gray-400" onclick="this.parentElement.parentElement.remove()">&times;</button>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
