@@ -529,7 +529,7 @@ class IndustriaChatard {
 
     // Método para enviar órdenes por WhatsApp
     sendOrderWhatsApp(orderData) {
-        const phoneNumber = '542645776592';
+        const phoneNumber = '542646195548';
         const message = this.formatWhatsAppOrderMessage(orderData);
         const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
         
