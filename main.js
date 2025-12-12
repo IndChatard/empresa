@@ -1,128 +1,356 @@
-// Industria Chatard - Aplicación Principal
+// Industria Chatard - Aplicación Principal Actualizada
 class IndustriaChatard {
     constructor() {
         this.cart = JSON.parse(localStorage.getItem('chatard_cart')) || [];
         this.products = [];
+        this.services = [];
         this.categories = ['todos', 'piezas', 'estructuras', 'herramientas', 'accesorios', 'repuestos'];
-        this.services = ['laser', 'plasma', 'mecanizado', 'mantenimiento'];
+        this.serviceCategories = ['corte', 'mecanizado', 'mantenimiento', 'otros'];
         this.init();
     }
 
     async init() {
-        await this.loadProducts();
+        await this.loadDataFromSheet();
         this.updateCartUI();
         this.bindEvents();
     }
 
-    async loadProducts() {
+    async loadDataFromSheet() {
         try {
-            // URL para cargar productos desde Google Sheets (modificar con tu URL)
-            const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwZ_XXYOUR_SCRIPT_ID/exec';
+            console.log('🔄 Cargando datos desde Google Sheet...');
             
-            const response = await fetch(SHEET_URL);
+            // 🔥 TU URL DE GOOGLE APPS SCRIPT
+            const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbx56rflxsf0hQ_Mkxsv1k2vNgEKeehiF4StJAp66lg-K_W9PeK1DCx8jNVlTpHGKLm9Jw/exec';
             
-            if (response.ok) {
-                const data = await response.json();
-                this.products = data.products || this.getDefaultProducts();
-            } else {
-                this.products = this.getDefaultProducts();
+            const response = await fetch(WEBAPP_URL);
+            
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
             }
             
-            console.log(`✅ ${this.products.length} productos cargados`);
+            const data = await response.json();
+            
+            if (data.success) {
+                this.products = data.products || [];
+                this.services = data.services || [];
+                
+                console.log(`✅ Datos cargados: ${this.products.length} productos, ${this.services.length} servicios`);
+                console.log('📊 Estadísticas:', data.stats);
+                
+                // Disparar evento para que las páginas se actualicen
+                this.dispatchDataLoadedEvent();
+                
+            } else {
+                throw new Error(data.error || 'Error en la respuesta del servidor');
+            }
             
         } catch (error) {
-            console.error('❌ Error cargando productos:', error);
+            console.error('❌ Error cargando datos:', error);
+            
+            // Datos de ejemplo para desarrollo
             this.products = this.getDefaultProducts();
+            this.services = this.getDefaultServices();
+            
+            console.log('🔄 Usando datos de ejemplo para desarrollo');
+            this.dispatchDataLoadedEvent();
         }
+    }
+
+    dispatchDataLoadedEvent() {
+        window.dispatchEvent(new CustomEvent('chatardDataLoaded', {
+            detail: {
+                products: this.products,
+                services: this.services
+            }
+        }));
     }
 
     getDefaultProducts() {
         return [
             {
-                id: 'pieza-001',
-                name: 'Placa de Acero Cortada Laser',
-                category: 'piezas',
-                allCategories: ['piezas'],
-                featured: true,
+                id: 'PLA-001',
+                name: 'Placa de Acero A36 5mm',
+                description: 'Placa de acero al carbono cortada a medida con láser CNC',
+                code: 'PLA-5MM-001',
                 price: 1250.50,
                 stock: 15,
-                image: 'resources/pieza-acero.jpg',
-                description: 'Placa de acero A36 cortada a medida con precisión láser',
-                code: 'PLA-001',
-                active: true
+                category: 'piezas',
+                allCategories: ['piezas', 'acero', 'planchuela'],
+                rubro: 'Producto',
+                featured: true,
+                active: true,
+                image: 'resources/placa-acero.jpg',
+                shippingCost: 0,
+                dimensions: '1000x500x5 mm',
+                weight: 2.5,
+                material: 'Acero A36',
+                color: 'Natural',
+                fabricationTime: '3-5 días',
+                warranty: '12 meses'
             },
             {
-                id: 'estructura-001',
-                name: 'Estructura Metálica Industrial',
-                category: 'estructuras',
-                allCategories: ['estructuras'],
-                featured: false,
+                id: 'EST-001',
+                name: 'Estructura Metálica Base',
+                description: 'Estructura base para máquinas industriales',
+                code: 'EST-BASE-001',
                 price: 8500.00,
                 stock: 8,
+                category: 'estructuras',
+                allCategories: ['estructuras', 'soldadas'],
+                rubro: 'Producto',
+                featured: false,
+                active: true,
                 image: 'resources/estructura.jpg',
-                description: 'Estructura base para máquinas industriales, soldada y pintada',
-                code: 'EST-001',
-                active: true
+                shippingCost: 500,
+                dimensions: '2000x1000x800 mm',
+                weight: 45,
+                material: 'Acero estructural',
+                color: 'Gris industrial',
+                fabricationTime: '7-10 días',
+                warranty: '24 meses'
             },
             {
-                id: 'herramienta-001',
+                id: 'HER-001',
                 name: 'Juego de Sujetadores CNC',
-                category: 'herramientas',
-                allCategories: ['herramientas'],
-                featured: true,
+                description: 'Set de 12 sujetadores para máquinas CNC',
+                code: 'HER-CNC-001',
                 price: 350.75,
                 stock: 25,
+                category: 'herramientas',
+                allCategories: ['herramientas', 'accesorios'],
+                rubro: 'Producto',
+                featured: true,
+                active: true,
                 image: 'resources/sujetadores.jpg',
-                description: 'Set de 12 sujetadores para máquinas CNC, incluye llaves',
-                code: 'HER-001',
-                active: true
+                shippingCost: 150,
+                dimensions: '30x20x5 cm',
+                weight: 0.8,
+                material: 'Acero templado',
+                color: 'Negro',
+                fabricationTime: 'Inmediato',
+                warranty: '6 meses'
             },
             {
-                id: 'repuesto-001',
+                id: 'REP-001',
                 name: 'Motor Paso a Paso NEMA 23',
-                category: 'repuestos',
-                allCategories: ['repuestos'],
-                featured: false,
+                description: 'Motor paso a paso para CNC, 1.8° por paso',
+                code: 'MOT-NEMA23-001',
                 price: 1200.00,
                 stock: 6,
-                image: 'resources/motor-nema23.jpg',
-                description: 'Motor paso a paso NEMA 23, 1.8° por paso, 2.5A',
-                code: 'REP-001',
-                active: true
-            },
-            {
-                id: 'accesorio-001',
-                name: 'Boquilla Corte Plasma',
-                category: 'accesorios',
-                allCategories: ['accesorios'],
-                featured: true,
-                price: 45.99,
-                stock: 30,
-                image: 'resources/boquilla-plasma.jpg',
-                description: 'Boquilla de repuesto para corte plasma Hypertherm',
-                code: 'ACC-001',
-                active: true
-            },
-            {
-                id: 'pieza-002',
-                name: 'Piñón Engranaje 20 Dientes',
-                category: 'piezas',
-                allCategories: ['piezas'],
+                category: 'repuestos',
+                allCategories: ['repuestos', 'electricos'],
+                rubro: 'Producto',
                 featured: false,
-                price: 320.00,
-                stock: 12,
-                image: 'resources/engranaje.jpg',
-                description: 'Piñón de engranaje fabricado en acero templado, 20 dientes',
-                code: 'PIN-002',
-                active: true
+                active: true,
+                image: 'resources/motor-nema23.jpg',
+                shippingCost: 200,
+                dimensions: '57x57x56 mm',
+                weight: 0.4,
+                material: 'Acero/Imán',
+                color: 'Negro/Dorado',
+                fabricationTime: '2-3 días',
+                warranty: '12 meses'
             }
         ];
     }
 
-    getFeaturedProducts() {
-        return this.products.filter(product => product.featured && product.stock > 0 && product.active);
+    getDefaultServices() {
+        return [
+            {
+                id: 'SER-001',
+                name: 'Corte Láser CNC',
+                description: 'Corte de precisión en metales con láser CNC de última generación',
+                rubro: 'Servicio',
+                category: 'corte',
+                featured: true,
+                active: true,
+                image: 'resources/laser-cnc.jpg',
+                minPrice: 5000,
+                priceType: 'm2',
+                estimatedTime: '24-48 horas',
+                capabilities: 'Hasta 25mm espesor, mesa 3000x1500mm',
+                materials: 'Acero, Aluminio, Cobre, Latón',
+                requirements: 'Archivo DXF/DWG, especificaciones técnicas'
+            },
+            {
+                id: 'SER-002',
+                name: 'Corte Plasma',
+                description: 'Corte de alta velocidad en materiales gruesos',
+                rubro: 'Servicio',
+                category: 'corte',
+                featured: true,
+                active: true,
+                image: 'resources/plasma.jpg',
+                minPrice: 3000,
+                priceType: 'm2',
+                estimatedTime: '24-72 horas',
+                capabilities: 'Hasta 50mm espesor, mesa 4000x2000mm',
+                materials: 'Acero al carbono, planchuela',
+                requirements: 'Archivo DXF/DWG, espesor especificado'
+            },
+            {
+                id: 'SER-003',
+                name: 'Centro Mecanizado CNC',
+                description: 'Fabricación de piezas complejas con máquinas de 5 ejes',
+                rubro: 'Servicio',
+                category: 'mecanizado',
+                featured: true,
+                active: true,
+                image: 'resources/centro-mecanizado.jpg',
+                minPrice: 8000,
+                priceType: 'hora',
+                estimatedTime: '3-7 días',
+                capabilities: '5 ejes simultáneos, precisión 0.01mm',
+                materials: 'Acero, Aluminio, Plásticos de ingeniería',
+                requirements: 'Modelo 3D (STEP/IGES), plano técnico'
+            },
+            {
+                id: 'SER-004',
+                name: 'Mantenimiento Pesado',
+                description: 'Servicio especializado para vehículos industriales',
+                rubro: 'Servicio',
+                category: 'mantenimiento',
+                featured: true,
+                active: true,
+                image: 'resources/mantenimiento.jpg',
+                minPrice: 10000,
+                priceType: 'servicio',
+                estimatedTime: '1-3 días',
+                capabilities: 'Mantenimiento preventivo y correctivo',
+                materials: 'Todos los tipos de vehículos pesados',
+                requirements: 'Diagnóstico previo, disponibilidad del vehículo'
+            }
+        ];
     }
 
+    // 🔥 FUNCIÓN ACTUALIZADA PARA ENVIAR A GOOGLE FORM
+    submitToGoogleForm(orderData) {
+        // 🔥 TU URL DE GOOGLE FORM
+        const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSddgt48q8DGbtbg0MA6VwfjwbqiPZ0Rt6ZxgkVGBqYGTjJ9rQ/formResponse';
+        
+        // 🔥 MAPPING DE TUS ENTRY IDs
+        const formData = {
+            'entry.411306303': orderData.orderId,                    // ID de Pedido
+            'entry.87325142': orderData.createdAt,                   // Fecha y Hora
+            'entry.1384590306': orderData.customer.firstName,        // Nombre
+            'entry.1339370619': orderData.customer.lastName,         // Apellido
+            'entry.1723137940': orderData.customer.phone,            // Teléfono
+            'entry.1197872688': orderData.customer.email || '',      // Email
+            'entry.171864356': orderData.customer.company || '',     // Empresa
+            'entry.2072946741': orderData.requestType || 'Compra de Productos', // Tipo Solicitud
+            'entry.976881798': this.getServiceName(orderData.service), // Servicio Requerido
+            'entry.1741428090': this.formatAddress(orderData.customer.address), // Dirección Completa
+            'entry.1388641277': orderData.customer.address.neighborhood, // Barrio
+            'entry.1892198459': orderData.customer.address.city,     // Ciudad
+            'entry.2041631929': this.getDeliveryTimeText(orderData.deliveryTime), // Horario de Entrega
+            'entry.1824153295': orderData.customer.address.references || '', // Referencias
+            'entry.747248552': this.formatProductsList(orderData.items), // Lista de Productos
+            'entry.1896614727': `$${orderData.total.toFixed(2)}`,     // Total del Pedido
+            'entry.1480807385': orderData.notes || '',               // Notas Adicionales
+            'entry.2093305046': orderData.paymentMethod || 'Efectivo', // Forma de Pago
+            'entry.1502548029': JSON.stringify(orderData, null, 2)   // Datos Completos (JSON)
+        };
+
+        console.log('📤 Enviando a Google Form:', Object.keys(formData).length, 'campos');
+        this.submitFormData(FORM_URL, formData);
+        return formData;
+    }
+
+    submitFormData(formUrl, data) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = formUrl;
+        form.target = '_blank';
+        form.style.display = 'none';
+
+        Object.entries(data).forEach(([name, value]) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = name;
+            input.value = value;
+            form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        
+        const iframe = document.createElement('iframe');
+        iframe.name = 'formTarget';
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        form.target = 'formTarget';
+        
+        form.submit();
+        
+        setTimeout(() => {
+            if (form.parentNode) document.body.removeChild(form);
+            if (iframe.parentNode) document.body.removeChild(iframe);
+        }, 3000);
+        
+        console.log('✅ Formulario enviado exitosamente');
+        return true;
+    }
+
+    // Funciones auxiliares
+    getServiceName(serviceCode) {
+        const servicesMap = {
+            'laser': 'Corte Láser CNC',
+            'plasma': 'Corte Plasma',
+            'mecanizado': 'Centro Mecanizado',
+            'hilo': 'Electroerosión por Hilo',
+            'mantenimiento': 'Mantenimiento Pesado',
+            'cotizacion': 'Cotización General'
+        };
+        return servicesMap[serviceCode] || serviceCode;
+    }
+
+    getDeliveryTimeText(time) {
+        const times = {
+            'morning': 'Mañana (9:00-12:00)',
+            'afternoon': 'Tarde (14:00-18:00)',
+            'evening': 'Noche (19:00-21:00)'
+        };
+        return times[time] || time;
+    }
+
+    formatAddress(address) {
+        let direccion = `${address.street} ${address.number}`;
+        if (address.floor) direccion += `, Piso ${address.floor}`;
+        if (address.apartment) direccion += `, Depto ${address.apartment}`;
+        direccion += `, ${address.neighborhood}, ${address.city}`;
+        return direccion;
+    }
+
+    formatProductsList(items) {
+        if (!items || items.length === 0) return 'No hay productos';
+        
+        let productList = '';
+        let totalCalculado = 0;
+        
+        items.forEach((item, index) => {
+            const product = this.products.find(p => p.id === item.productId);
+            if (product) {
+                const subtotal = product.price * item.quantity;
+                totalCalculado += subtotal;
+                
+                productList += `${index + 1}. ${product.name}\n`;
+                productList += `   Código: ${product.code}\n`;
+                productList += `   Cantidad: ${item.quantity} unidades\n`;
+                productList += `   Precio: $${product.price.toFixed(2)} c/u\n`;
+                productList += `   Subtotal: $${subtotal.toFixed(2)}\n`;
+                if (product.material) productList += `   Material: ${product.material}\n`;
+                if (product.dimensions) productList += `   Dimensiones: ${product.dimensions}\n`;
+                productList += '\n';
+            } else {
+                productList += `${index + 1}. Producto ID: ${item.productId}\n`;
+                productList += `   Cantidad: ${item.quantity} unidades\n\n`;
+            }
+        });
+        
+        productList += `---\nTOTAL CALCULADO: $${totalCalculado.toFixed(2)}`;
+        return productList;
+    }
+
+    // Funciones del carrito
     addToCart(productId, quantity = 1) {
         const product = this.products.find(p => p.id === productId);
         if (!product) {
@@ -130,6 +358,7 @@ class IndustriaChatard {
             return false;
         }
 
+        // Verificar stock
         if (product.stock < quantity) {
             this.showToast(`Stock insuficiente. Solo quedan ${product.stock} unidades`, 'error');
             return false;
@@ -138,6 +367,7 @@ class IndustriaChatard {
         const existingItem = this.cart.find(item => item.productId === productId);
         
         if (existingItem) {
+            // Verificar que no exceda el stock total
             if (existingItem.quantity + quantity > product.stock) {
                 this.showToast(`No puedes agregar más. Stock máximo: ${product.stock}`, 'error');
                 return false;
@@ -149,7 +379,9 @@ class IndustriaChatard {
                 quantity: quantity,
                 price: product.price,
                 name: product.name,
-                image: product.image
+                image: product.image,
+                code: product.code,
+                shippingCost: product.shippingCost || 0
             });
         }
 
@@ -184,9 +416,20 @@ class IndustriaChatard {
     }
 
     getCartTotal() {
-        return this.cart.reduce((total, item) => {
-            return total + (item.price * item.quantity);
+        const subtotal = this.cart.reduce((total, item) => {
+            const product = this.products.find(p => p.id === item.productId);
+            return total + ((product?.price || item.price || 0) * item.quantity);
         }, 0);
+        
+        const shipping = this.cart.reduce((total, item) => {
+            return total + (item.shippingCost || 0);
+        }, 0);
+        
+        return {
+            subtotal: subtotal,
+            shipping: shipping,
+            total: subtotal + shipping
+        };
     }
 
     getCartItemCount() {
@@ -195,26 +438,37 @@ class IndustriaChatard {
 
     saveCart() {
         localStorage.setItem('chatard_cart', JSON.stringify(this.cart));
+        this.dispatchCartUpdatedEvent();
+    }
+
+    dispatchCartUpdatedEvent() {
+        window.dispatchEvent(new CustomEvent('chatardCartUpdated', {
+            detail: { cart: this.cart }
+        }));
     }
 
     updateCartUI() {
-        const cartCounts = document.querySelectorAll('#cart-count, .cart-count');
+        const cartCounts = document.querySelectorAll('#cart-count, .cart-count, #header-cart-count');
+        const cartTotalElements = document.querySelectorAll('#cart-total, .cart-total');
+        
+        const count = this.getCartItemCount();
+        const totals = this.getCartTotal();
         
         cartCounts.forEach(cartCount => {
-            const count = this.getCartItemCount();
-            cartCount.textContent = count > 0 ? count : '';
-            cartCount.style.display = count > 0 ? 'flex' : 'none';
+            if (cartCount) {
+                cartCount.textContent = count > 0 ? count : '';
+                cartCount.style.display = count > 0 ? 'flex' : 'none';
+            }
         });
         
-        // También actualizar en todas las páginas abiertas
-        this.dispatchStorageEvent();
-    }
-
-    dispatchStorageEvent() {
-        window.dispatchEvent(new StorageEvent('storage', {
-            key: 'chatard_cart',
-            newValue: JSON.stringify(this.cart)
-        }));
+        cartTotalElements.forEach(element => {
+            if (element) {
+                element.textContent = `$${totals.total.toFixed(2)}`;
+            }
+        });
+        
+        // Actualizar en otras pestañas
+        localStorage.setItem('chatard_cart_updated', Date.now().toString());
     }
 
     showToast(message, type = 'success') {
@@ -225,14 +479,22 @@ class IndustriaChatard {
         toast.innerHTML = `
             <div class="flex items-center">
                 <span class="text-sm">${message}</span>
-                <button class="ml-4 text-gray-400 hover:text-gray-600" onclick="this.parentElement.parentElement.remove()">&times;</button>
+                <button class="ml-4 text-gray-400 hover:text-gray-600 transition-colors" 
+                        onclick="this.parentElement.parentElement.remove()">&times;</button>
             </div>
         `;
         
         document.body.appendChild(toast);
         
+        // Animación de entrada
         setTimeout(() => {
-            toast.style.opacity = '0';
+            toast.classList.add('opacity-100');
+        }, 10);
+        
+        // Auto-remover después de 3 segundos
+        setTimeout(() => {
+            toast.classList.remove('opacity-100');
+            toast.classList.add('opacity-0');
             setTimeout(() => {
                 if (toast.parentNode) {
                     toast.remove();
@@ -248,99 +510,128 @@ class IndustriaChatard {
                 this.cart = JSON.parse(e.newValue) || [];
                 this.updateCartUI();
             }
+            if (e.key === 'chatard_cart_updated') {
+                const currentCart = JSON.parse(localStorage.getItem('chatard_cart')) || [];
+                if (JSON.stringify(currentCart) !== JSON.stringify(this.cart)) {
+                    this.cart = currentCart;
+                    this.updateCartUI();
+                }
+            }
+        });
+        
+        // Escuchar evento personalizado de datos cargados
+        window.addEventListener('chatardDataLoaded', (e) => {
+            this.products = e.detail.products || [];
+            this.services = e.detail.services || [];
+            console.log('📦 Datos actualizados desde evento');
         });
     }
 
     // Método para enviar órdenes por WhatsApp
     sendOrderWhatsApp(orderData) {
         const phoneNumber = '542645776592';
-        const message = this.formatOrderMessage(orderData);
+        const message = this.formatWhatsAppOrderMessage(orderData);
         const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
         
         window.open(whatsappUrl, '_blank');
         return true;
     }
 
-    formatOrderMessage(orderData) {
-        const serviceNames = {
-            'laser': 'Corte Láser CNC',
-            'plasma': 'Corte Plasma',
-            'mecanizado': 'Centro Mecanizado',
-            'mantenimiento': 'Mantenimiento Pesado'
-        };
-
+    formatWhatsAppOrderMessage(orderData) {
         let message = `🛠️ *NUEVO PEDIDO - Industria Chatard* 🛠️\n\n`;
         
         message += `📋 *Orden:* ${orderData.orderId}\n`;
         message += `📅 *Fecha:* ${new Date().toLocaleDateString('es-AR')}\n`;
         message += `🕐 *Hora:* ${new Date().toLocaleTimeString('es-AR')}\n\n`;
         
-        if (orderData.type === 'service') {
-            message += `👤 *CLIENTE*\n`;
-            message += `▫️ Nombre: ${orderData.customer.name}\n`;
-            message += `▫️ Teléfono: ${orderData.customer.phone}\n`;
-            message += `▫️ Email: ${orderData.customer.email || 'No especificado'}\n\n`;
-            
-            message += `🛠️ *SERVICIO SOLICITADO*\n`;
-            message += `▫️ ${serviceNames[orderData.service] || orderData.service}\n`;
-            message += `▫️ Descripción: ${orderData.description}\n\n`;
-            
-            if (orderData.material) message += `▫️ Material: ${orderData.material}\n`;
-            if (orderData.quantity) message += `▫️ Cantidad: ${orderData.quantity}\n`;
-            if (orderData.deadline) message += `▫️ Plazo: ${orderData.deadline}\n`;
-            
-        } else if (orderData.type === 'product') {
-            message += `👤 *CLIENTE*\n`;
-            message += `▫️ ${orderData.customer.name}\n`;
-            message += `▫️ ${orderData.customer.phone}\n`;
-            message += `▫️ ${orderData.customer.address}\n\n`;
-            
-            message += `📦 *PRODUCTOS*\n`;
-            orderData.items.forEach((item, index) => {
-                message += `${index + 1}. ${item.name} x${item.quantity}\n`;
-                message += `   Precio: $${item.price.toFixed(2)} c/u\n`;
-                message += `   Subtotal: $${(item.price * item.quantity).toFixed(2)}\n\n`;
-            });
-            
-            message += `💰 *TOTAL: $${orderData.total.toFixed(2)}*\n\n`;
+        message += `👤 *CLIENTE*\n`;
+        message += `▫️ Nombre: ${orderData.customer.firstName} ${orderData.customer.lastName}\n`;
+        message += `▫️ Teléfono: ${orderData.customer.phone}\n`;
+        if (orderData.customer.email) message += `▫️ Email: ${orderData.customer.email}\n`;
+        if (orderData.customer.company) message += `▫️ Empresa: ${orderData.customer.company}\n`;
+        
+        message += `\n📍 *DIRECCIÓN DE ENTREGA*\n`;
+        message += `▫️ ${orderData.customer.address.street} ${orderData.customer.address.number}\n`;
+        message += `▫️ ${orderData.customer.address.neighborhood}, ${orderData.customer.address.city}\n`;
+        if (orderData.customer.address.references) {
+            message += `▫️ Referencias: ${orderData.customer.address.references}\n`;
         }
         
-        message += `📍 *ENVIADO DESDE WEB:* ${window.location.origin}`;
+        message += `\n🕐 *HORARIO: ${this.getDeliveryTimeText(orderData.deliveryTime)}*\n\n`;
+        
+        if (orderData.items && orderData.items.length > 0) {
+            message += `📦 *PRODUCTOS SOLICITADOS*\n`;
+            orderData.items.forEach((item, index) => {
+                const product = this.products.find(p => p.id === item.productId);
+                if (product) {
+                    message += `${index + 1}. ${product.name}\n`;
+                    message += `   ▫️ Código: ${product.code}\n`;
+                    message += `   ▫️ Cantidad: ${item.quantity}\n`;
+                    message += `   ▫️ Precio: $${product.price.toFixed(2)} c/u\n`;
+                    message += `   ▫️ Subtotal: $${(product.price * item.quantity).toFixed(2)}\n\n`;
+                }
+            });
+            
+            const totals = this.getCartTotal();
+            message += `💰 *RESUMEN DE PAGO*\n`;
+            message += `▫️ Subtotal: $${totals.subtotal.toFixed(2)}\n`;
+            message += `▫️ Envío: $${totals.shipping.toFixed(2)}\n`;
+            message += `▫️ *TOTAL: $${totals.total.toFixed(2)}*\n\n`;
+        }
+        
+        if (orderData.service) {
+            message += `🛠️ *SERVICIO SOLICITADO*\n`;
+            message += `▫️ ${this.getServiceName(orderData.service)}\n`;
+            if (orderData.notes) message += `▫️ Notas: ${orderData.notes}\n`;
+            message += `\n`;
+        }
+        
+        message += `💳 *FORMA DE PAGO:* ${orderData.paymentMethod || 'A convenir'}\n\n`;
+        message += `📝 *ENVIADO DESDE WEB:* ${window.location.origin}\n`;
+        message += `⏰ *HORA DE RECEPCIÓN:* ${new Date().toLocaleTimeString('es-AR')}`;
         
         return message;
     }
 
-    // Método para enviar a Google Forms
-    submitToGoogleForm(formData, formUrl) {
-        // Crear formulario oculto
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = formUrl;
-        form.target = '_blank';
-        form.style.display = 'none';
-
-        // Agregar campos
-        Object.entries(formData).forEach(([name, value]) => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = name;
-            input.value = value;
-            form.appendChild(input);
-        });
-
-        document.body.appendChild(form);
-        form.submit();
-        
-        setTimeout(() => {
-            document.body.removeChild(form);
-        }, 1000);
+    // Método para refrescar datos
+    async refreshData() {
+        await this.loadDataFromSheet();
+        this.showToast('Datos actualizados correctamente', 'success');
+        return {
+            products: this.products,
+            services: this.services
+        };
     }
 
-    // Método para refrescar productos
-    async refreshProducts() {
-        await this.loadProducts();
-        this.showToast('Productos actualizados', 'success');
-        return this.products;
+    // Métodos para obtener datos filtrados
+    getFeaturedProducts() {
+        return this.products.filter(product => product.featured && product.active && product.stock > 0);
+    }
+
+    getFeaturedServices() {
+        return this.services.filter(service => service.featured && service.active);
+    }
+
+    getProductsByCategory(category) {
+        if (category === 'todos') {
+            return this.products.filter(product => product.active && product.stock > 0);
+        }
+        return this.products.filter(product => 
+            product.active && 
+            product.stock > 0 && 
+            (product.category === category || 
+             (product.allCategories && product.allCategories.includes(category)))
+        );
+    }
+
+    getServicesByCategory(category) {
+        if (category === 'todos') {
+            return this.services.filter(service => service.active);
+        }
+        return this.services.filter(service => 
+            service.active && 
+            service.category === category
+        );
     }
 }
 
@@ -369,9 +660,9 @@ function updateQuantity(productId, quantity) {
     }
 }
 
-function refreshProducts() {
+function refreshData() {
     if (window.chatardApp) {
-        return window.chatardApp.refreshProducts();
+        return window.chatardApp.refreshData();
     }
 }
 
@@ -379,6 +670,19 @@ function refreshProducts() {
 function formatPrice(price) {
     return new Intl.NumberFormat('es-AR', {
         style: 'currency',
-        currency: 'ARS'
+        currency: 'ARS',
+        minimumFractionDigits: 2
     }).format(price);
+}
+
+// Helper para formatear fechas
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-AR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 }
