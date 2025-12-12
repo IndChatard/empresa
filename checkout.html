@@ -526,7 +526,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                                 <div>
                                     <label class="form-label" for="phone">Teléfono *</label>
-                                    <input type="tel" id="phone" class="form-input" required placeholder="2645776592">
+                                    <input type="tel" id="phone" class="form-input" required placeholder="2646195548">
                                     <div class="error-message" id="phone-error">Por favor ingresa un teléfono válido</div>
                                 </div>
                                 <div>
@@ -1248,7 +1248,7 @@
                 const submitBtn = document.getElementById('place-order-btn');
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Realizar Pedido';
-                showToast('Error al procesar. Contacta al 2645776592', 'error');
+                showToast('Error al procesar. Contacta al 2646195548', 'error');
             }
         }
 
@@ -1271,7 +1271,7 @@
 
         // 🔥 FUNCIÓN PRINCIPAL: ENVÍO POR WHATSAPP
         function sendWhatsAppOrder(orderData) {
-            const phoneNumber = '542645776592';
+            const phoneNumber = '542646195548';
             const message = formatOrderMessage(orderData);
             const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
             
