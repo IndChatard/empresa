@@ -475,58 +475,92 @@
     
     <script>
         // Inicializar cuando el DOM esté listo
-        document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
+        loadFeaturedProducts();
+        updateCartUI();
+        
+        // Escuchar cuando los datos se carguen
+        window.addEventListener('chatardDataLoaded', function(e) {
+            console.log('📦 Datos recibidos en index.html');
             loadFeaturedProducts();
-            updateCartUI();
         });
         
+        // Si la app ya tiene datos, cargar inmediatamente
+        if (window.chatardApp && window.chatardApp.products.length > 0) {
+            loadFeaturedProducts();
+        }
+    });
+        
         function loadFeaturedProducts() {
-            const productsGrid = document.getElementById('featured-products');
-            
-            // Simular carga de productos
-            setTimeout(() => {
-                const featuredProducts = window.chatardApp?.getFeaturedProducts();
+                const featuredGrid = document.getElementById('featured-products');
+                if (!featuredGrid) return;
                 
-                if (featuredProducts && featuredProducts.length > 0) {
-                    productsGrid.innerHTML = featuredProducts.map(product => `
-                        <div class="product-card relative">
-                            ${product.featured ? '<div class="featured-badge">Destacado</div>' : ''}
-                            ${product.stock > 0 ? '<div class="stock-badge">Disponible</div>' : ''}
-                            
-                            <img src="${product.image || 'resources/placeholder.jpg'}" 
-                                 alt="${product.name}" 
-                                 class="product-image"
-                                 onerror="this.src='resources/placeholder.jpg'">
-                            
-                            <div class="p-4">
-                                <h3 class="font-semibold text-gray-industrial mb-2 font-inter truncate">
-                                    ${product.name}
-                                </h3>
-                                <p class="text-gray-600 text-sm mb-3 line-clamp-2">
-                                    ${product.description}
-                                </p>
-                                <div class="flex justify-between items-center">
-                                    <span class="price-tag">$${product.price.toFixed(2)}</span>
-                                    <button class="btn-primary text-sm" 
-                                            onclick="addToCart('${product.id}')"
-                                            ${product.stock === 0 ? 'disabled' : ''}>
-                                        ${product.stock === 0 ? 'Agotado' : 'Agregar'}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `).join('');
+                let products = [];
+                
+                if (window.chatardApp) {
+                    products = window.chatardApp.getFeaturedProducts();
                 } else {
-                    productsGrid.innerHTML = `
+                    // Datos de ejemplo mientras carga
+                    products = [
+                        {
+                            id: 'PLA-001',
+                            name: 'Placa de Acero A36',
+                            description: 'Cortada a medida con láser CNC',
+                            price: 1250.50,
+                            stock: 15,
+                            image: 'resources/placa-acero.jpg',
+                            code: 'PLA-5MM-001',
+                            featured: true
+                        }
+                    ];
+                }
+                
+                if (products.length === 0) {
+                    featuredGrid.innerHTML = `
                         <div class="col-span-full text-center py-12">
                             <p class="text-gray-500">No hay productos destacados disponibles</p>
                         </div>
                     `;
+                    return;
                 }
-            }, 500);
-        }
+                
+                featuredGrid.innerHTML = products.map(product => `
+                    <div class="product-card relative">
+                        ${product.featured ? '<div class="featured-badge">Destacado</div>' : ''}
+                        ${product.stock > 0 ? '<div class="stock-badge">Disponible</div>' : ''}
+                        
+                        <img src="${product.image || 'resources/placeholder.jpg'}" 
+                             alt="${product.name}" 
+                             class="product-image"
+                             onerror="this.src='resources/placeholder.jpg'">
+                        
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-industrial mb-2 font-inter truncate">
+                                ${product.name}
+                            </h3>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+                                ${product.description}
+                            </p>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs text-gray-500">Código: ${product.code}</span>
+                                <span class="text-xs ${product.stock > 10 ? 'text-green-success' : 'text-orange-accent'}">
+                                    Stock: ${product.stock}
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag">$${product.price.toFixed(2)}</span>
+                                <button class="btn-primary text-sm" 
+                                        onclick="addToCart('${product.id}')"
+                                        ${product.stock === 0 ? 'disabled' : ''}>
+                                    ${product.stock === 0 ? 'Agotado' : 'Agregar'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
         
-        function updateCartUI() {
+         function updateCartUI() {
             const cartCount = document.getElementById('cart-count');
             const cart = JSON.parse(localStorage.getItem('chatard_cart')) || [];
             const count = cart.reduce((total, item) => total + item.quantity, 0);
