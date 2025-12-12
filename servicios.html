@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servicios - Industria Chatard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'blue-primary': '#1E40AF',
+                        'blue-secondary': '#3B82F6',
+                        'gray-industrial': '#374151',
+                        'orange-accent': '#F59E0B',
+                        'green-success': '#10B981'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            background-color: #F8FAFC;
+        }
+        
+        .service-detail-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+            border-left: 4px solid #3B82F6;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 64, 175, 0.3);
+        }
+        
+        .btn-accent {
+            background: #F59E0B;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-accent:hover {
+            background: #D97706;
+            transform: translateY(-1px);
+        }
+        
+        .section-title {
+            position: relative;
+            padding-bottom: 16px;
+            margin-bottom: 32px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #1E40AF, #3B82F6);
+        }
+        
+        .service-icon-large {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #3B82F6, #1E40AF);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin: 0 auto 24px;
+        }
+        
+        .equipment-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border: 2px solid #E5E7EB;
+            transition: all 0.3s ease;
+        }
+        
+        .equipment-card:hover {
+            border-color: #3B82F6;
+            transform: translateY(-4px);
+        }
+        
+        @media (max-width: 640px) {
+            .service-detail-card {
+                padding: 16px !important;
+            }
+            
+            .equipment-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="h-10 w-10 bg-gradient-to-br from-blue-primary to-blue-secondary rounded-lg flex items-center justify-center mr-3">
+                        <span class="text-white font-bold text-lg">IC</span>
+                    </div>
+                    <span class="text-xl font-bold text-gray-industrial font-inter">Industria Chatard</span>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-industrial hover:text-blue-primary transition-colors">Inicio</a>
+                    <a href="servicios.html" class="text-blue-primary font-medium">Servicios</a>
+                    <a href="productos.html" class="text-gray-industrial hover:text-blue-primary transition-colors">Productos</a>
+                    <a href="turnos.html" class="text-gray-industrial hover:text-blue-primary transition-colors">Turnos</a>
+                    <a href="cart.html" class="text-gray-industrial hover:text-blue-primary transition-colors">Carrito</a>
+                </nav>
+                
+                <!-- Mobile menu button -->
+                <button class="md:hidden" onclick="toggleMobileMenu()">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Mobile menu -->
+            <div id="mobile-menu" class="md:hidden hidden py-4">
+                <a href="index.html" class="block py-2 text-gray-industrial hover:text-blue-primary">Inicio</a>
+                <a href="servicios.html" class="block py-2 text-blue-primary font-medium">Servicios</a>
+                <a href="productos.html" class="block py-2 text-gray-industrial hover:text-blue-primary">Productos</a>
+                <a href="turnos.html" class="block py-2 text-gray-industrial hover:text-blue-primary">Turnos</a>
+                <a href="cart.html" class="block py-2 text-gray-industrial hover:text-blue-primary">Carrito</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="bg-gradient-to-r from-blue-primary to-blue-secondary text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="text-4xl font-bold font-inter mb-4">Servicios Metal-Mecánicos</h1>
+            <p class="text-xl">Tecnología de punta y experiencia para sus proyectos más exigentes</p>
+        </div>
+    </section>
+
+    <!-- Services Details -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- CNC Laser -->
+            <div class="service-detail-card mb-12 p-8">
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <div class="service-icon-large">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-industrial mb-4 font-inter">Corte Láser CNC</h2>
+                        <p class="text-gray-600 mb-4">
+                            Nuestro sistema de corte láser CNC de última generación ofrece precisión milimétrica 
+                            en metales como acero inoxidable, aluminio, cobre y más.
+                        </p>
+                        <ul class="space-y-2 mb-6">
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-success mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Espesores desde 0.5mm hasta 25mm</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-success mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Mesa de trabajo 3000x1500mm</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-success mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Precisión de ±0.1mm</span>
+                            </li>
+                        </ul>
+                        <a href="turnos.html?service=laser" class="btn-primary inline-block">
+                            Solicitar Cotización
+                        </a>
+                    </div>
+                    <div>
+                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" 
+                             alt="Corte Láser CNC" 
+                             class="rounded-lg shadow-lg w-full h-64 object-cover">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Plasma -->
+            <div class="service-detail-card mb-12 p-8">
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="order-2 md:order-1">
+                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" 
+                             alt="Corte Plasma" 
+                             class="rounded-lg shadow-lg w-full h-64 object-cover">
+                    </div>
+                    <div class="order-1 md:order-2">
+                        <div class="service-icon-large">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-industrial mb-4 font-inter">Corte Plasma</h2>
+                        <p class="text-gray-600 mb-4">
+                            Corte de alta velocidad para materiales gruesos. Ideal para planchuela, chapas 
+                            y estructuras pesadas con excelente relación calidad-precio.
+                        </p>
+                        <ul class="space-y-2 mb-6">
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-success mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Corte hasta 50mm de espesor</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-success mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Mesa 4000x2000mm</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-success mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Bajo costo por producción masiva</span>
+                            </li>
+                        </ul>
+                        <a href="turnos.html?service=plasma" class="btn-primary inline-block">
+                            Solicitar Cotización
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Machinery Centers -->
+            <div class="service-detail-card mb-12 p-8">
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <div class="service-icon-large">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-industrial mb-4 font-inter">Centros Mecanizados</h2>
+                        <p class="text-gray-600 mb-4">
+                            Fabricación de piezas complejas con máquinas de 3, 4 y 5 ejes. Desde prototipos 
+                            hasta producción en serie con tolerancias de ±0.01mm.
+                        </p>
+                        <ul class="space-y-2 mb-6">
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-success mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Mecanizado 3, 4 y 5 ejes</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-success mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Torneado CNC hasta Ø500mm</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-success mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Materiales: acero, aluminio, plásticos</span>
+                            </li>
+                        </ul>
+                        <a href="turnos.html?service=mecanizado" class="btn-primary inline-block">
+                            Solicitar Cotización
+                        </a>
+                    </div>
+                    <div>
+                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" 
+                             alt="Centro Mecanizado" 
+                             class="rounded-lg shadow-lg w-full h-64 object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Equipment -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-gray-industrial mb-8 font-inter section-title">
+                Nuestro Equipamiento
+            </h2>
+            
+            <div class="equipment-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="equipment-card">
+                    <h3 class="font-semibold text-lg mb-2 font-inter">Corte Láser Bystronic</h3>
+                    <p class="text-gray-600 text-sm mb-3">Modelo BySprint Fiber 3015, 4kW</p>
+                    <p class="text-blue-primary text-sm font-medium">Capacidad: 3000x1500mm</p>
+                </div>
+                
+                <div class="equipment-card">
+                    <h3 class="font-semibold text-lg mb-2 font-inter">Plasma Hypertherm</h3>
+                    <p class="text-gray-600 text-sm mb-3">Modelo XPR300, 400A</p>
+                    <p class="text-blue-primary text-sm font-medium">Mesa: 4000x2000mm</p>
+                </div>
+                
+                <div class="equipment-card">
+                    <h3 class="font-semibold text-lg mb-2 font-inter">Centro Mecanizado Haas</h3>
+                    <p class="text-gray-600 text-sm mb-3">Modelo VF-2SSYT, 5 ejes</p>
+                    <p class="text-blue-primary text-sm font-medium">XYZ: 762x406x508mm</p>
+                </div>
+                
+                <div class="equipment-card">
+                    <h3 class="font-semibold text-lg mb-2 font-inter">Torno CNC Okuma</h3>
+                    <p class="text-gray-600 text-sm mb-3">Modelo LB3000 EX-MY</p>
+                    <p class="text-blue-primary text-sm font-medium">Diámetro: 500mm</p>
+                </div>
+                
+                <div class="equipment-card">
+                    <h3 class="font-semibold text-lg mb-2 font-inter">Electroerosión por Hilo</h3>
+                    <p class="text-gray-600 text-sm mb-3">Modelo Sodick AQ325L</p>
+                    <p class="text-blue-primary text-sm font-medium">Precisión: ±0.005mm</p>
+                </div>
+                
+                <div class="equipment-card">
+                    <h3 class="font-semibold text-lg mb-2 font-inter">Prensa Hidráulica</h3>
+                    <p class="text-gray-600 text-sm mb-3">Capacidad 150 toneladas</p>
+                    <p class="text-blue-primary text-sm font-medium">Mesa: 2000x1000mm</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-16 bg-gradient-to-r from-blue-primary to-blue-secondary text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold font-inter mb-4">
+                ¿Listo para comenzar su proyecto?
+            </h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto">
+                Nuestros ingenieros están listos para asesorarlo en la mejor solución
+            </p>
+            <a href="turnos.html" class="btn-accent text-lg px-8 py-3 inline-block">
+                Solicitar Asesoría Técnica
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-industrial text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <div class="h-8 w-8 bg-gradient-to-br from-blue-secondary to-blue-primary rounded-lg flex items-center justify-center mr-3">
+                            <span class="text-white font-bold">IC</span>
+                        </div>
+                        <span class="text-xl font-bold font-inter">Industria Chatard</span>
+                    </div>
+                    <p class="text-gray-300 text-sm">
+                        Especialistas en soluciones metal-mecánicas desde 1998.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 font-inter">Contacto</h4>
+                    <p class="text-gray-300 text-sm mb-2">📱 Tel: (264) 577-6592</p>
+                    <p class="text-gray-300 text-sm mb-2">📧 info@industriachatard.com</p>
+                    <p class="text-gray-300 text-sm">📍 Av. Industrial 123, San Juan</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 font-inter">Horarios</h4>
+                    <p class="text-gray-300 text-sm mb-1">Lun-Vie: 8:00-18:00</p>
+                    <p class="text-gray-300 text-sm">Sábado: 8:00-13:00</p>
+                </div>
+            </div>
+            <div class="border-t border-gray-600 mt-8 pt-8 text-center text-gray-400 text-sm">
+                <p>&copy; 2024 Industria Chatard. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+        
+        // Auto-select service from URL parameter
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const service = urlParams.get('service');
+            
+            if (service) {
+                const element = document.getElementById(`service-${service}`);
+                if (element) {
+                    setTimeout(() => {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                    }, 500);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
