@@ -304,11 +304,27 @@
     
     <script>
         let currentCategory = 'todos';
+        let allProducts = [];
         
         document.addEventListener('DOMContentLoaded', function() {
             loadCategories();
             loadProducts();
             updateCartUI();
+            
+            // Escuchar cuando los datos se carguen
+            window.addEventListener('chatardDataLoaded', function(e) {
+                console.log('📦 Datos recibidos en productos.html');
+                allProducts = e.detail.products || [];
+                loadCategories();
+                loadProducts();
+            });
+            
+            // Si la app ya tiene datos, cargar inmediatamente
+            if (window.chatardApp && window.chatardApp.products.length > 0) {
+                allProducts = window.chatardApp.products;
+                loadCategories();
+                loadProducts();
+            }
         });
         
         function loadCategories() {
@@ -338,56 +354,33 @@
         
         function loadProducts() {
             const productsGrid = document.getElementById('products-grid');
-            const products = window.chatardApp?.products || getDefaultProducts();
             
-            displayProducts(products);
+            if (allProducts.length === 0) {
+                if (window.chatardApp) {
+                    allProducts = window.chatardApp.products;
+                } else {
+                    allProducts = getDefaultProducts();
+                }
+            }
+            
+            displayProducts(allProducts);
         }
         
         function getDefaultProducts() {
             return [
                 {
-                    id: 'pieza-001',
-                    name: 'Placa de Acero Cortada',
+                    id: 'PLA-001',
+                    name: 'Placa de Acero A36 5mm',
                     category: 'piezas',
                     featured: true,
                     price: 1250.50,
                     stock: 15,
-                    image: 'resources/placeholder.jpg',
-                    description: 'Placa de acero A36 cortada a medida',
-                    code: 'PLA-001'
-                },
-                {
-                    id: 'estructura-001',
-                    name: 'Estructura Metálica',
-                    category: 'estructuras',
-                    featured: false,
-                    price: 8500.00,
-                    stock: 8,
-                    image: 'resources/placeholder.jpg',
-                    description: 'Estructura base para máquinas industriales',
-                    code: 'EST-001'
-                },
-                {
-                    id: 'herramienta-001',
-                    name: 'Juego de Sujetadores',
-                    category: 'herramientas',
-                    featured: true,
-                    price: 350.75,
-                    stock: 25,
-                    image: 'resources/placeholder.jpg',
-                    description: 'Set de 12 sujetadores para CNC',
-                    code: 'HER-001'
-                },
-                {
-                    id: 'repuesto-001',
-                    name: 'Motor Paso a Paso',
-                    category: 'repuestos',
-                    featured: false,
-                    price: 1200.00,
-                    stock: 6,
-                    image: 'resources/placeholder.jpg',
-                    description: 'Motor NEMA 23 para máquinas CNC',
-                    code: 'REP-001'
+                    image: 'resources/placa-acero.jpg',
+                    description: 'Placa de acero al carbono cortada a medida',
+                    code: 'PLA-5MM-001',
+                    material: 'Acero A36',
+                    dimensions: '1000x500x5 mm',
+                    shippingCost: 0
                 }
             ];
         }
@@ -395,8 +388,10 @@
         function displayProducts(products) {
             const productsGrid = document.getElementById('products-grid');
             const filteredProducts = currentCategory === 'todos' 
-                ? products 
-                : products.filter(p => p.category === currentCategory);
+                ? products.filter(p => p.active && p.stock > 0)
+                : products.filter(p => p.active && p.stock > 0 && 
+                    (p.category === currentCategory || 
+                     (p.allCategories && p.allCategories.includes(currentCategory))));
             
             document.getElementById('product-count').textContent = filteredProducts.length;
             
@@ -432,8 +427,27 @@
                         <p class="text-gray-600 text-sm mb-3 line-clamp-2">
                             ${product.description}
                         </p>
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-xs text-gray-500">Código: ${product.code}</span>
+                        <div class="space-y-2 mb-3">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-500">Código:</span>
+                                <span class="font-medium">${product.code}</span>
+                            </div>
+                            ${product.material ? `
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-500">Material:</span>
+                                <span>${product.material}</span>
+                            </div>` : ''}
+                            ${product.dimensions ? `
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-500">Dimensiones:</span>
+                                <span>${product.dimensions}</span>
+                            </div>` : ''}
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-500">Envío:</span>
+                                <span class="${product.shippingCost === 0 ? 'text-green-success' : 'text-orange-accent'}">
+                                    ${product.shippingCost === 0 ? 'Gratis' : `$${product.shippingCost}`}
+                                </span>
+                            </div>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="price-tag">$${product.price.toFixed(2)}</span>
@@ -448,17 +462,17 @@
             `).join('');
         }
         
-        function filterByCategory(category) {
-            currentCategory = category;
-            
-            // Update active filter button
-            document.querySelectorAll('.category-filter').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.category === category);
-            });
-            
-            // Filter products
-            loadProducts();
-        }
+        
+        
+       function filterByCategory(category) {
+        currentCategory = category;
+        
+        document.querySelectorAll('.category-filter').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.category === category);
+        });
+        
+        loadProducts();
+    }
         
         function updateCartUI() {
             const cartCount = document.getElementById('cart-count');
